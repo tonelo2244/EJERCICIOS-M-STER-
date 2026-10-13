@@ -41,16 +41,20 @@ const movies = [
   },
 ];
 
+const movieDocuments = movies.map((movie) => new Movie(movie));
+
 const seedMovies = async () => {
   try {
     await connect();
 
-    if (await Movie.exists({})) {
+    const allMovies = await Movie.find();
+
+    if (allMovies.length > 0) {
       console.log("Ya hay peliculas. No se ha cambiado nada.");
       return;
     }
 
-    await Movie.insertMany(movies);
+    await Movie.insertMany(movieDocuments);
     console.log("Se han guardado las 6 peliculas");
   } catch (error) {
     console.error("Error al cargar las peliculas:", error.message);

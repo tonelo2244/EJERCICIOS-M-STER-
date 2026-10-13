@@ -3,18 +3,16 @@ const Cinema = require("../models/Cinema");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const cinemas = await Cinema.find().populate("movies");
     return res.status(200).json(cinemas);
   } catch (error) {
-    return res.status(500).json({
-      message: "Error al consultar los cines",
-    });
+    return next(error);
   }
 });
 
-router.post("/create", async (req, res) => {
+router.post("/create", async (req, res, next) => {
   try {
     const newCinema = new Cinema({
       name: req.body.name,
@@ -25,11 +23,7 @@ router.post("/create", async (req, res) => {
     const createdCinema = await newCinema.save();
     return res.status(201).json(createdCinema);
   } catch (error) {
-    const status = error.name === "ValidationError" ? 400 : 500;
-
-    return res.status(status).json({
-      message: status === 400 ? error.message : "Error al crear el cine",
-    });
+    return next(error);
   }
 });
 
